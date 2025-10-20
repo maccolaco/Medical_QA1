@@ -23,18 +23,18 @@ const LoginPage: React.FC = () => {
 
     try {
       if (isLogin) {
-        const result = await invoke<{ user: any } | null>('authenticate_user', {
+        const result = await invoke<any>('authenticate_user', {
           username: formData.username,
           password: formData.password
         })
         
-        if (result?.user) {
-          login(result.user)
+        if (result) {
+          login(result)
         } else {
           setError('Invalid username or password')
         }
       } else {
-        const result = await invoke('create_user', {
+        const result = await invoke<any>('create_user', {
           username: formData.username,
           email: formData.email,
           password: formData.password,
@@ -42,11 +42,12 @@ const LoginPage: React.FC = () => {
         })
         
         if (result) {
-          login(result as any)
+          login(result)
         }
       }
     } catch (err) {
-      setError(err as string)
+      console.error('Authentication error:', err)
+      setError(typeof err === 'string' ? err : 'Authentication failed')
     } finally {
       setLoading(false)
     }
