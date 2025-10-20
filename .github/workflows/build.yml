@@ -1,0 +1,110 @@
+name: Build and Test ClaimsSense
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run frontend tests
+      run: npm test
+    
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+    
+    - name: Install Tauri CLI
+      run: npm install -g @tauri-apps/cli
+    
+    - name: Build Rust backend
+      run: cd src-tauri && cargo build --verbose
+    
+    - name: Run Rust tests
+      run: cd src-tauri && cargo test --verbose
+
+  build-windows:
+    needs: test
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+    
+    - name: Install Tauri CLI
+      run: npm install -g @tauri-apps/cli
+    
+    - name: Build Windows installer
+      run: npm run tauri:build
+    
+    - name: Upload Windows artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-installer
+        path: src-tauri/target/release/bundle/msi/*.msi
+
+  build-macos:
+    needs: test
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+    
+    - name: Install Tauri CLI
+      run: npm install -g @tauri-apps/cli
+    
+    - name: Build macOS installer
+      run: npm run tauri:build
+    
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-installer
+        path: src-tauri/target/release/bundle/dmg/*.dmg
+

@@ -1,0 +1,31 @@
+[package]
+name = "claimsense"
+version = "1.0.0"
+description = "Medical Claims QA Desktop Application"
+authors = ["ClaimsSense Team"]
+license = "MIT"
+repository = "https://github.com/claimsense/claimsense"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.5.0", features = [] }
+
+[dependencies]
+tauri = { version = "1.5.0", features = [ "dialog-open", "fs-remove-dir", "fs-read-dir", "shell-open", "fs-exists", "process-exit", "fs-create-dir", "fs-read-file", "fs-write-file", "fs-remove-file", "process-relaunch", "path-all", "fs-rename-file", "dialog-save", "fs-copy-file"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid"], default-features = false }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+anyhow = "1.0"
+thiserror = "1.0"
+walkdir = "2.3"
+image = "0.24"
+base64 = "0.21"
+hex = "0.4"
+aes-gcm = "0.10"
+rand = "0.8"
+regex = "1.0"
