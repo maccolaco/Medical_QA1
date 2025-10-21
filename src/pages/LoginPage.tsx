@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { invoke } from '@tauri-apps/api/tauri'
 import { useAuthStore } from '../stores/authStore'
+import { supabase } from '../lib/supabase'
 
 const LoginPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true)
@@ -23,26 +23,68 @@ const LoginPage: React.FC = () => {
 
     try {
       if (isLogin) {
-        const result = await invoke<any>('authenticate_user', {
-          username: formData.username,
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: formData.email || formData.username,
           password: formData.password
         })
-        
-        if (result) {
-          login(result)
-        } else {
-          setError('Invalid username or password')
+
+        if (error) {
+          setError(error.message)
+          return
+        }
+
+        if (data.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', data.user.id)
+            .maybeSingle()
+
+          if (profile) {
+            login({
+              id: profile.id,
+              username: profile.username,
+              email: profile.email,
+              role: profile.role,
+              created_at: profile.created_at,
+              last_login: profile.last_login
+            })
+          }
         }
       } else {
-        const result = await invoke<any>('create_user', {
-          username: formData.username,
+        const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
-          role: formData.role
+          options: {
+            data: {
+              username: formData.username,
+              role: formData.role
+            }
+          }
         })
-        
-        if (result) {
-          login(result)
+
+        if (error) {
+          setError(error.message)
+          return
+        }
+
+        if (data.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', data.user.id)
+            .maybeSingle()
+
+          if (profile) {
+            login({
+              id: profile.id,
+              username: profile.username,
+              email: profile.email,
+              role: profile.role,
+              created_at: profile.created_at,
+              last_login: profile.last_login
+            })
+          }
         }
       }
     } catch (err) {
