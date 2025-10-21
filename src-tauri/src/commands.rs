@@ -235,7 +235,7 @@ pub async fn create_user(
     state: State<'_, AppState>,
 ) -> Result<User, String> {
     let user_id = Uuid::new_v4();
-    let role_enum: UserRole = serde_json::from_str(&role)
+    let role_enum: UserRole = serde_json::from_str(&format!("\"{}\"", role))
         .map_err(|e| e.to_string())?;
 
     let user = User {
