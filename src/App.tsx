@@ -9,6 +9,7 @@ import ClaimReviewPage from './pages/ClaimReviewPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import SettingsPage from './pages/SettingsPage'
 import UsersPage from './pages/UsersPage'
+import { DemoTour } from './components/DemoTour'
 
 function App() {
   const { isAuthenticated } = useAuthStore()
@@ -31,6 +32,7 @@ function App() {
           <Route path="/users" element={<UsersPage />} />
         </Routes>
       </DashboardLayout>
+      <DemoTour />
     </Router>
   )
 }

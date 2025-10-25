@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { 
-  Upload, 
-  AlertTriangle, 
-  AlertCircle, 
-  CheckCircle, 
-  BarChart3, 
-  Settings, 
+import {
+  Upload,
+  AlertTriangle,
+  AlertCircle,
+  CheckCircle,
+  BarChart3,
+  Settings,
   Users,
   Search,
   Bell,
-  LogOut
+  LogOut,
+  Play
 } from 'lucide-react'
 import { useAuthStore } from '../stores/authStore'
-import { invoke } from '@tauri-apps/api/tauri'
+import { useDemoStore } from '../stores/demoStore'
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -22,6 +23,7 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation()
   const { user, logout } = useAuthStore()
+  const { startDemo } = useDemoStore()
   const [searchQuery, setSearchQuery] = useState('')
 
   const navigation = [
@@ -100,10 +102,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             </div>
             
             <div className="flex items-center space-x-4">
+              <button
+                onClick={startDemo}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Play size={16} />
+                Start Demo
+              </button>
+
               <button className="p-2 text-gray-400 hover:text-gray-600">
                 <Bell className="h-5 w-5" />
               </button>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="text-sm">
                   <p className="font-medium text-gray-900">{user?.username}</p>
